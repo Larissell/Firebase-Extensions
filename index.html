@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Extensions Label Images</title>
+    <link rel="stylesheet" href="./index.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script> <!-- Inclui a biblioteca JavaScript do Firebase (Firebase SDK) para o Firebase Authentication.-->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script> <!-- Inclui a biblioteca JavaScript do Firebase Storage para o armazenamento de arquivos no Firebase.-->
+  </head>
+  <body>
+    <div class="imageUpload">
+      <input type="file" class="inp" onchange="getImageData(event)" />
+      <button onclick="selectImage()" class="selectImage">+</button>
+      <br>  
+      <span class="filedata"></span>
+      <div class="progressBar">
+        <div class="progress"></div>
+      </div>
+      <br>
+      <button onclick="uploadImage()" class="upload">Upload</button>
+      <span class="loading">Loading...</span>
+      <img class="img" />
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>

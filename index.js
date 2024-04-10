@@ -1,87 +1,120 @@
+
 const firebaseConfig = {
-    apiKey: "AIzaSyDPzU2WE44jrV8cbplMFsCv1y-5LFeO3qU",
-    authDomain: "uploadimg-fc170.firebaseapp.com",
-    projectId: "uploadimg-fc170",
-    storageBucket: "uploadimg-fc170.appspot.com",
-    messagingSenderId: "779865574756",
-    appId: "1:779865574756:web:64f2e8833bd6a6d50bbe71",
+  apiKey: "AIzaSyDPzU2WE44jrV8cbplMFsCv1y-5LFeO3qU",
+  authDomain: "uploadimg-fc170.firebaseapp.com",
+  projectId: "uploadimg-fc170",
+  storageBucket: "uploadimg-fc170.appspot.com",
+  messagingSenderId: "779865574756",
+  appId: "1:779865574756:web:64f2e8833bd6a6d50bbe71",
+  measurementId: "G-S2VR1JKHPY"
   };
+// Inicializa o Firebase
+firebase.initializeApp(firebaseConfig);
 
-  const app = firebase.initializeApp(firebaseConfig);
+// Referências para o armazenamento e para o Firestore
+const storage = firebase.storage();
+const firestore = firebase.firestore();
 
-  const storage = firebase.storage(); //: Cria uma referência ao serviço de armazenamento do Firebase, que permite trabalhar com o armazenamento de arquivos.
+ //Seleciona o elemento HTML com a classe "img", que será usado para exibir a imagem após o upload.
+const progressbar = document.querySelector(".progress");
+let progress;
+function atualizaStatus(snapshot){
+  console.log("Snapshot", snapshot.ref.name);
+  progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  progress = Math.round(progress);
+  progressbar.style.width = progress + "%";
+  progressbar.innerHTML = progress + "%";
+  uploadedFileName = snapshot.ref.name;
+}
 
-  const inp = document.querySelector(".inp"); //: Seleciona o elemento HTML com a classe "inp", que é um campo de entrada de arquivo para o usuário selecionar uma imagem.
-  const progressbar = document.querySelector(".progress"); //Seleciona o elemento HTML com a classe "img", que será usado para exibir a imagem após o upload.
-  const img = document.querySelector(".img");
-  const fileData = document.querySelector(".filedata");
-  const loading = document.querySelector(".loading");
-  let file;
-  let fileName;
-  let progress;
-  let isLoading = false;
-  let uploadedFileName;
-  
-  function selectImage() {
-    inp.click();
-  }
-  
-  function getImageData(e) {
-    file = e.target.files[0];
-    fileName = Math.round(Math.random() * 9999) + file.name;
-    if (fileName) {
-      fileData.style.display = "block";
-    }
-    fileData.innerHTML = fileName;
-    console.log(file, fileName);
-  }
-  
-  function atualizaStatus(snapshot){
-    console.log("Snapshot", snapshot.ref.name);
-    progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    progress = Math.round(progress);
-    progressbar.style.width = progress + "%";
-    progressbar.innerHTML = progress + "%";
-    uploadedFileName = snapshot.ref.name;
+
+// Função para enviar a imagem para o Firebase Storage e salvar os dados no Firestore
+function uploadImage() {
+  const fileInput = document.getElementById('image-upload');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    console.error('Nenhuma imagem selecionada.');
+    return;
   }
 
-  function deuErro(erro){
-    console.log(erro);
-  }
+  // Referência ao armazenamento da imagem
+  const imageRef = storage.ref(`/images/${file.name}`);
 
-  function deuCerto(){
-    storage
-          .ref("myimages")
-          .child(uploadedFileName)
-          .getDownloadURL()
-          .then(function(url) {
-            console.log("URL", url);
-            // Exibe a imagem na página
-            if (!url) {
-              img.style.display = "none";
-            } else {
-              img.style.display = "block";
-              loading.style.display = "none";
+  // Realiza o upload da imagem
+  imageRef.put(file).then((snapshot) => {
+    console.log('Imagem enviada com sucesso para o Firebase Storage.');
+
+    // Obtém a URL da imagem no armazenamento
+    imageRef.getDownloadURL().then((imageUrl) => {
+      console.log('URL da imagem:', imageUrl);
+
+      // Chama a função para obter os rótulos da imagem
+      getLabels(imageUrl).then((labels) => {
+        // Salva os dados no Firestore, incluindo os rótulos obtidos
+        firestore.collection('imageLabels').add({
+          file: imageUrl,
+          labels: labels
+        }).then((docRef) => {
+          console.log('Dados salvos no Firestore com o ID:', docRef.id);
+
+          // Exibe a imagem e os rótulos na tela
+          const labelsContainer = document.getElementById('labelsContainer');
+          labelsContainer.innerHTML = `
+            <img src="${imageUrl}" alt="Imagem">
+            <p>Rótulos da imagem: ${labels.join(', ')}</p>
+          `;
+        }).catch((error) => {
+          console.error('Erro ao salvar dados no Firestore:', error);
+        });
+      }).catch((error) => {
+        console.error('Erro ao obter rótulos da imagem:', error);
+      });
+    }).catch((error) => {
+      console.error('Erro ao obter URL da imagem:', error);
+    });
+  }).catch((error) => {
+    console.error('Erro ao enviar imagem para o Firebase Storage:', error);
+  });
+}
+
+// Função para obter os rótulos da imagem usando o Cloud Vision API
+async function getLabels(imageUrl) {
+  // Crie uma solicitação para a API Cloud Vision
+  const response = await fetch('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDPzU2WE44jrV8cbplMFsCv1y-5LFeO3qU', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      requests: [
+        {
+          image: {
+            source: {
+              imageUri: imageUrl
             }
-            img.setAttribute("src", url);
-          });
-        console.log("File Uploaded Successfully");
+          },
+          features: [
+            {
+              type: 'LABEL_DETECTION',
+              maxResults: 5
+            }
+          ]
+        }
+      ]
+    })
+  });
+
+  // Verifique se a solicitação foi bem-sucedida
+  if (!response.ok) {
+    throw new Error('Erro ao obter rótulos da imagem.');
   }
 
-  function uploadImage() {
-    // Exibe o elemento de carregamento para indicar que o upload está em andamento
-    loading.style.display = "block";
-  
-    // Cria uma referência para o local no Firebase Storage onde a imagem será armazenada
-    const storageRef = storage.ref().child("myimages");
-  
-    // Cria uma referência para o arquivo no Firebase Storage, usando o nome gerado aleatoriamente
-    const folderRef = storageRef.child(fileName);
-  
-    // Inicia o processo de upload da imagem para o Firebase Storage
-    const uploadtask = folderRef.put(file);
-  
-    // Adiciona um observador para monitorar o estado do upload
-    uploadtask.on("state_changed",atualizaStatus,deuErro,deuCerto);
-  }
-  
+  // Parse a resposta JSON
+  const data = await response.json();
+
+  // Extrai os rótulos da resposta
+  const labels = data.responses[0].labelAnnotations.map(annotation => annotation.description);
+
+  return labels;
+}

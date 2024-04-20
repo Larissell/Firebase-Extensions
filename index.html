@@ -10,20 +10,24 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script> <!-- Inclui a biblioteca JavaScript do Firebase Storage para o armazenamento de arquivos no Firebase.-->
   </head>
   <body>
-    <div class="imageUpload">
-      <input type="file" class="inp" onchange="getImageData(event)" />
-      <button onclick="selectImage()" class="selectImage">+</button>
-      <br>  
-      <span class="filedata"></span>
-      <div class="progressBar">
-        <div class="progress"></div>
-      </div>
-      <br>
-      <button onclick="uploadImage()" class="upload">Upload</button>
-      <span class="loading">Loading...</span>
-      <img class="img" />
-    </div>
+    <div id="form">
+      <div class="imageUpload">
+          <input type="file" id="image-upload" accept="image/*">
+          <label for="image-upload">Escolher arquivo</label>
 
-    <script src="index.js"></script>
+          <br><br>
+          <button onclick="uploadImage()">Rotular Imagem</button>
+          <br><br>
+          
+          <div id="labelsContainer">
+            <!-- Aqui serão adicionados os rótulos dinamicamente -->
+          </div>
+          
+        </div>
+     <!-- Firebase JavaScript SDK -->
+     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="index.js"></script>
   </body>
 </html>

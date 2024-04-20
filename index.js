@@ -1,4 +1,5 @@
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyDPzU2WE44jrV8cbplMFsCv1y-5LFeO3qU",
   authDomain: "uploadimg-fc170.firebaseapp.com",
@@ -8,113 +9,94 @@ const firebaseConfig = {
   appId: "1:779865574756:web:64f2e8833bd6a6d50bbe71",
   measurementId: "G-S2VR1JKHPY"
   };
-// Inicializa o Firebase
-firebase.initializeApp(firebaseConfig);
+  
+  // Inicializa o Firebase
+  firebase.initializeApp(firebaseConfig);
+  
+  // Referência para o armazenamento e para o Firestore
+  const storage = firebase.storage();
+  const firestore = firebase.firestore();
 
-// Referências para o armazenamento e para o Firestore
-const storage = firebase.storage();
-const firestore = firebase.firestore();
-
- //Seleciona o elemento HTML com a classe "img", que será usado para exibir a imagem após o upload.
-const progressbar = document.querySelector(".progress");
-let progress;
-function atualizaStatus(snapshot){
-  console.log("Snapshot", snapshot.ref.name);
-  progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  progress = Math.round(progress);
-  progressbar.style.width = progress + "%";
-  progressbar.innerHTML = progress + "%";
-  uploadedFileName = snapshot.ref.name;
-}
-
-
-// Função para enviar a imagem para o Firebase Storage e salvar os dados no Firestore
-function uploadImage() {
-  const fileInput = document.getElementById('image-upload');
-  const file = fileInput.files[0];
-
-  if (!file) {
-    console.error('Nenhuma imagem selecionada.');
-    return;
-  }
-
-  // Referência ao armazenamento da imagem
-  const imageRef = storage.ref(`/images/${file.name}`);
-
-  // Realiza o upload da imagem
-  imageRef.put(file).then((snapshot) => {
-    console.log('Imagem enviada com sucesso para o Firebase Storage.');
-
-    // Obtém a URL da imagem no armazenamento
-    imageRef.getDownloadURL().then((imageUrl) => {
-      console.log('URL da imagem:', imageUrl);
-
-      // Chama a função para obter os rótulos da imagem
-      getLabels(imageUrl).then((labels) => {
-        // Salva os dados no Firestore, incluindo os rótulos obtidos
+  // Chama a função para exibir os rótulos quando a página carregar
+  displayLabels();
+  
+  // Função para enviar a imagem para o Firebase Storage e salvar os dados no Firestore
+  function uploadImage() {
+    const fileInput = document.getElementById('image-upload');
+    const file = fileInput.files[0];
+  
+    if (!file) {
+      console.error('Nenhuma imagem selecionada.');
+      return;
+    }
+  
+    // Referência ao armazenamento da imagem
+    const imageRef = storage.ref(`/images/${file.name}`);
+  
+    // Realiza o upload da imagem
+    imageRef.put(file).then((snapshot) => {
+      console.log('Imagem enviada com sucesso para o Firebase Storage.');
+  
+      // Obtém a URL da imagem no armazenamento
+      snapshot.ref.getDownloadURL().then((imageUrl) => {
+        console.log('URL da imagem:', imageUrl);
+  
+        // Salva os dados no Firestore, com rótulos vazios inicialmente
         firestore.collection('imageLabels').add({
           file: imageUrl,
-          labels: labels
+          labels: [] // Inicialmente, os rótulos estão vazios
         }).then((docRef) => {
           console.log('Dados salvos no Firestore com o ID:', docRef.id);
-
-          // Exibe a imagem e os rótulos na tela
-          const labelsContainer = document.getElementById('labelsContainer');
-          labelsContainer.innerHTML = `
-            <img src="${imageUrl}" alt="Imagem">
-            <p>Rótulos da imagem: ${labels.join(', ')}</p>
-          `;
+  
+          // Após o envio bem-sucedido da imagem, chama a função para exibir os rótulos
+          displayLabels();
         }).catch((error) => {
           console.error('Erro ao salvar dados no Firestore:', error);
         });
       }).catch((error) => {
-        console.error('Erro ao obter rótulos da imagem:', error);
+        console.error('Erro ao obter URL da imagem:', error);
       });
     }).catch((error) => {
-      console.error('Erro ao obter URL da imagem:', error);
+      console.error('Erro ao enviar imagem para o Firebase Storage:', error);
     });
-  }).catch((error) => {
-    console.error('Erro ao enviar imagem para o Firebase Storage:', error);
-  });
-}
-
-// Função para obter os rótulos da imagem usando o Cloud Vision API
-async function getLabels(imageUrl) {
-  // Crie uma solicitação para a API Cloud Vision
-  const response = await fetch('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDPzU2WE44jrV8cbplMFsCv1y-5LFeO3qU', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      requests: [
-        {
-          image: {
-            source: {
-              imageUri: imageUrl
-            }
-          },
-          features: [
-            {
-              type: 'LABEL_DETECTION',
-              maxResults: 5
-            }
-          ]
-        }
-      ]
-    })
-  });
-
-  // Verifique se a solicitação foi bem-sucedida
-  if (!response.ok) {
-    throw new Error('Erro ao obter rótulos da imagem.');
   }
 
-  // Parse a resposta JSON
-  const data = await response.json();
+// Função para exibir os rótulos das imagens na tela
+function displayLabels() {
+  // Referência para a coleção de imagens rotuladas no Firestore
+  const imageLabelsRef = firestore.collection('imageLabels');
 
-  // Extrai os rótulos da resposta
-  const labels = data.responses[0].labelAnnotations.map(annotation => annotation.description);
+  // Consulta as imagens rotuladas
+  imageLabelsRef.get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const imageData = doc.data();
 
-  return labels;
+      // Cria um elemento div para a imagem e seus rótulos associados
+      const imageDiv = document.createElement('div');
+      imageDiv.classList.add('image-with-labels');
+
+      // Adiciona a imagem ao elemento div
+      const imageElement = document.createElement('img');
+      storage.refFromURL(imageData.file).getDownloadURL().then((imageUrl) => {
+        imageElement.src = imageUrl;
+        // Estilize a altura e a largura da imagem aqui
+        imageElement.style.maxWidth = '80%'; // Define a largura máxima como 100%
+        imageElement.style.maxHeight = '160px'; // Define a altura máxima como 300px
+      }).catch((error) => {
+        console.error('Erro ao obter URL da imagem no Firebase Storage:', error);
+      });
+      imageElement.alt = 'Imagem';
+      imageDiv.appendChild(imageElement);
+
+      // Adiciona os rótulos da imagem ao elemento div
+      const labelsElement = document.createElement('p');
+      labelsElement.textContent = `Rótulos da imagem: ${imageData.labels.join(', ')}`;
+      imageDiv.appendChild(labelsElement);
+
+      // Adiciona o elemento div ao contêiner de rótulos
+      labelsContainer.appendChild(imageDiv);
+    });
+  }).catch((error) => {
+    console.error('Erro ao obter imagens rotuladas do Firestore:', error);
+  });
 }

@@ -10,10 +10,18 @@
     <div class="window">
         <span class="h1">Login</span>
         <form>
-          <input type="email" class="mt-4 form-control" placeholder="Email">
-          <input type="password" class="mt-2 form-control" placeholder="Senha">
-          <input type="submit" class="mb-2 btn btn-light mt-2" value="Entrar">
+          <input type="email" id="email" class="mt-4 form-control" placeholder="Email" required>
+          <input type="password" id="password" class="mt-2 form-control" placeholder="Senha" required>
+          <input type="button" id="loginButton" onclick="loginUser()" class="mb-2 btn btn-light mt-2" value="Entrar">
         </form>
       </div>
+
+      <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    
+    
+      <script src="index.js"></script>
 </body>
 </html>

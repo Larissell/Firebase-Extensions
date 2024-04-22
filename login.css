@@ -61,7 +61,7 @@ input[type="email"]::placeholder, input[type="password"]::placeholder{
 
 input[type="email"],
 input[type="password"],
-input[type="submit"] {
+input[type="button"] {
     width: 80%;
     padding: 10px; /* Adicionei um preenchimento interno aos inputs para melhorar a aparência */
     margin-top: 10px; /* Adicionei um pequeno espaço entre os inputs */
@@ -70,7 +70,7 @@ input[type="submit"] {
 }
 
 
-input[type="submit"] {
+input[type="button"] {
     width: 50%; /* Alterado para 50% para reduzir o tamanho do botão */
     margin-top: 20px; /* Adicionado para separar o botão do último input */
     border-radius: 8px;

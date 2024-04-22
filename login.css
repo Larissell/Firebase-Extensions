@@ -1,0 +1,92 @@
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:url('https://images.unsplash.com/photo-1650220796556-22f512aec67f?q=80&w=1854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size:cover;
+  background-position:center;
+}
+
+.window{
+  width: 80%; /* Alterado para 80% para melhor adaptação em telas menores */
+  max-width: 400px; /* Adicionado um limite de largura */
+  height:300px;
+  padding:40px;
+  text-align:center;
+  border:1px solid white;
+  border-radius:20px;
+  backdrop-filter:blur(20px) brightness(200%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.window .h1 {
+    font-size: 28px; /* Aumentando o tamanho da fonte */
+    font-family: 'Arial', sans-serif; /* Escolhendo uma fonte */
+    color: #fff; /* Cor da fonte */
+    margin: 0; /* Removendo margem para um espaçamento mais apertado */
+    text-transform: uppercase; /* Transformando em maiúsculas */
+    letter-spacing: 2px; /* Espaçamento entre letras */
+  }
+
+input[type="email"], input[type="password"]{
+  border-radius:8px;
+  border:1px solid white;
+  color:white !important;
+  background:transparent;
+  width: calc(100% - 22px);
+}
+
+form {
+    width: 100%;
+    margin-top: 20px; /* Adicionado espaço entre o título e o formulário */
+  }
+
+input[type="email"]:focus, input[type="password"]:focus{
+  background:#00000040;
+  box-shadow:none;
+  border:1px solid white;
+}
+
+input[type="email"]::placeholder, input[type="password"]::placeholder{
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    color:white;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="submit"] {
+    width: 80%;
+    padding: 10px; /* Adicionei um preenchimento interno aos inputs para melhorar a aparência */
+    margin-top: 10px; /* Adicionei um pequeno espaço entre os inputs */
+    border-radius: 8px;
+    color: white;
+}
+
+
+input[type="submit"] {
+    width: 50%; /* Alterado para 50% para reduzir o tamanho do botão */
+    margin-top: 20px; /* Adicionado para separar o botão do último input */
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 14px;
+    border: 1px solid white;
+    background-color: transparent;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  @media screen and (max-width: 900px) {
+    .window {
+      width: 90%; 
+      max-width: 300px; 
+      height:250px;
+    }
+  }

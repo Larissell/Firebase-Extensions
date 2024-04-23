@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase Extensions Label Images</title>
     <link rel="stylesheet" href="./index.css" />
+<<<<<<< HEAD
 </head>
 <body>
 <div id="form">
@@ -41,3 +42,30 @@
     <script src="index.js"></script>
 </body>
 </html>
+=======
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script> <!-- Inclui a biblioteca JavaScript do Firebase (Firebase SDK) para o Firebase Authentication.-->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script> <!-- Inclui a biblioteca JavaScript do Firebase Storage para o armazenamento de arquivos no Firebase.-->
+  </head>
+  <body>
+    <div id="form">
+      <div class="imageUpload">
+          <input type="file" id="image-upload" accept="image/*">
+          <label for="image-upload">Escolher arquivo</label>
+
+          <br><br>
+          <button onclick="uploadImage()">Rotular Imagem</button>
+          <br><br>
+          
+          <div id="labelsContainer">
+            <!-- Aqui serão adicionados os rótulos dinamicamente -->
+          </div>
+          
+        </div>
+     <!-- Firebase JavaScript SDK -->
+     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="index.js"></script>
+  </body>
+</html>
+>>>>>>> 9253b7e8107fbb8e6af2b8c5e9c98c1ed77a5c4b

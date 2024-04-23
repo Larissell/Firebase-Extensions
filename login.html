@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="./login.css" />
+</head>
+<body>
+  <main>
+    <div class="window">
+        <span class="h1">Login</span>
+        <form>
+          <input type="email" id="email" class="mt-4 form-control" placeholder="Email" required>
+          <input type="password" id="password" class="mt-2 form-control" placeholder="Senha" required>
+          <input type="button" id="loginButton" onclick="loginUser()" class="mb-2 btn btn-light mt-2" value="Entrar">
+        </form>
+      </div>
+
+  </main>
+
+  <footer>
+    <div class="col-12 col-am-6">
+        <div class="d-flex flex-column">
+            <p>&copy; 2024 Larissa Souza, Maria Isabelly e Luis Guilherme</p>
+        </div>
+    </div>
+  </footer>
+  
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  
+  
+  <script src="index.js"></script>
+</body>
+
+
+
+</html> 
